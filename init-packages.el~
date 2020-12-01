@@ -1,0 +1,76 @@
+(require 'package)
+(package-initialize)
+(setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+			 ("melpa" . "http://elpa.emacs-china.org/melpa/")))
+;; 注意 elpa.emacs-china.org 是 Emacs China 中文社区在国内搭建的一个 ELPA 镜像
+
+ ;; C - Common Lisp Extension
+;(require 'cl)
+
+;; Add Packages
+;(defvar my/packages '(
+;                company
+ ;               hungry-delete
+  ;              swiper
+   ;             counsel
+    ;            smartparens
+     ;           ;; --- Major Mode ---
+      ;          js2-mode
+       ;         ;; --- Minor Mode ---
+        ;        nodejs-repl;;运行js代码
+         ;       ;;exec-path-from-shell
+          ;      ;; --- Themes ---
+           ;     monokai-theme
+            ;    ;; solarized-theme
+             ;   ) "Default packages")
+
+
+
+;;启用hungry-delete
+;;(require 'hungry-delete)
+;;(global-hungry-delete-mode)
+
+;;(setenv "HOME" "C:/Users/123/AppData/Roaming/") ;; you can change this dir to the place you like,可用于将HOME变量设置为任意路径
+;;(load "~/.emacs.d/init.el");;用于加载配置文件init.el
+
+;;启用smartparens
+(require 'smartparens-config)
+;;(add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
+(smartparens-global-mode t);;全局使用
+
+;;启用js2-mode
+(setq auto-mode-alist
+          (append
+           '(("\\.js\\'" . js2-mode))
+           auto-mode-alist))
+
+;;配置auctex
+;;这两行不是必要的,如果打开tex文件，菜单栏会出现Preview、LaTex和Command三个选项即可
+;;(load "auctex.el" nil t t)
+;;(load "preview.el" nil t t)
+;;下面两行命令是文档解析功能，为了获得在文档中使用的许多LaTeX软件包的支持
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+;;如果您经常使用\include或 \input，则应使AUCTeX能够加载多文件文档的结构。
+;;每次您打开一个新文件时，AUTCeX都会要求您提供一个主文件。
+(setq-default TeX-master nil)
+;;(setq global-font-lock-mode t) ;;高亮显示代码，这个默认设置为t
+
+;;启用popwin
+(require 'popwin)
+(popwin-mode 1)
+
+;;设置smex
+;;(require 'smex) ; Not needed if you use package.el
+;;(smex-initialize) ; Can be omitted. This might cause a (minimal) delay
+					; when Smex is auto-initialized on its first run.
+;;(global-set-key (kbd "M-x") 'smex)
+;;(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; This is your old M-x.
+;;(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+;;打开自动补全插件
+(global-company-mode 1)
+
+;;默认打开主题monokai
+(load-theme 'monokai 1)

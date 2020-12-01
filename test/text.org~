@@ -1,0 +1,109 @@
+* 标题1
+** 标题1.2
+* 标题2
+** 标题2.1
+*** 标题2.1.1
+S+Tab 展开\折叠所有章节
+Tab 展开\折叠光标所在章节
+M-left/right升级/降级标题
+
++ treeroot
+  + branch1
+  + branch2
+M-RET可以自动输入同级条目,M-left/right调整层级
+
+1. [-] 任务1 [66%]
+   1. [X] 子任务1
+   2. [ ] 子任务2
+   3. [X] 子任务3
+2. [ ] 任务2
+M-S-RET自动输入一个带checkbox的列表项,在总任务后面可以输入一个[0%]或者[0/2]则能自动计算总任务进度
+C-c C-c改变checkbox的状态.
+M-up/down上下移动列表项
+
+[fn:1]本文参考自http://orgmode.org/orgguide.pdf
+脚注
+
+input | Name | phone | sub1 | sub2 | total |
+| name        |  phone | sub1 | sub2 | total |
+|-------------+--------+------+------+-------|
+| maple       | 134... |   89 |   98 |   187 |
+| wizard      | 152... |   78 |   65 |   143 |
+| Hello World | 123... |   76 |   87 |   163 |
+| hehe        | 157... |   87 |   78 |   165 |
+#+TBLFM: $5=$3+$4
+- 输入|-按tab则可以自动生成列表.
+- Tab调到右方窗格,S+Tab则向左跳.Enter可以调到下方窗格
+- C-c C-c能够自动对齐表格
+- 在total列输入=$3+$4,然后按C-u C-c C-c,可以自动补全total列
+- M-up/right/left/right 上下左右移动行（列）
+- M-S-up/right/left/right 向上下左右插入行（列）
+
+[[http://orgmode.org/orguide.pdf][grgguid.pdf]]
+[[file:f:/.emacs.d/test/1.jpg]]
+C-c C-x C-v 直接预览图片
+
+** TODO 洗衣服
+C-c C-t
+
+*** DONE [#A] 任务1*
+*** TODO [#B] 任务2
+*** TODO [总任务] [66%]
+**** TODO 子任务1
+**** DONE 子任务2 [100%]
+     - [X] subsub1 [2/2]
+       - [X] subsub2
+       - [X] subsub3
+**** DONE 一个已经完成的任务
+
+*** 章标题              :work:learn:
+**** 节标题1               :fly:plane:
+**** 节标题2               :car:run:
+<2019-12-09 周一>
+
+*bold*
+/italic/
+_underlined_
+=code=
+~verbatim~
++strike-through+
+
+#+title:This is the title of the docunment
+#+OPTIONS:toc:2(only to two levels in TOC)
+#+OPTIONS:toc:nil(no TOC at all)
+
+#+BEGIN_QUOTE
+Everthing should be made as simple as possible,
+but not any simpler -- Alber Einstein
+#+END_QUOTE
+
+#+BEGIN_CENTER
+Everthing shoule be made as simple as possible,but not any simpler
+#+END_CENTER
+
+#+begin_example
+这里面的字符不会被转义
+#+end_example
+
+#+begin_comment
+这里的注释不会被导出
+#+end_comment
+
+#+begin_src emacs-lisp
+(+ 1 2 3 4)
+#+end_src
+
+#+RESULTS:
+: 10
+#+begin_src python
+a=1+1
+print a
+#+end_src
+
+#+RESULTS:
+
+#+begin_src C++ :includes <stdio.h>
+int a=1;
+int b=1;
+printf("%d\n",a+b);
+#+end_stc
