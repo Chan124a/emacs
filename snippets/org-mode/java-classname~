@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: java-classname
+# key: java
+# --
+#+BEGIN_SRC java :classname Test
+$0
+#+END_SRC

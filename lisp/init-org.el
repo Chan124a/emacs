@@ -17,6 +17,7 @@
 ;;     (perl . t)
      (C . t)
      ;;(C++ . t)
+     (java . t)
      ))
 
   ;; 设置默认 Org Agenda 文件目录

@@ -64,8 +64,8 @@
 ;;将M-d 设置为删除光标前一个字符
 (global-set-key (kbd "M-d") 'backward-delete-char-untabify)
 
-;;将标记(Mark set)的快捷键设置为 C-i
-(global-set-key (kbd "C-i") 'set-mark-command)
+;;将标记(Mark set)的快捷键设置为 C-i   ,这个设置我取消了，因为我发现C-i与TAB是同样功能，这里将C-i设置为Mark set会导致按TAB键时也进入Mark set
+;;(global-set-key (kbd "C-i") 'set-mark-command)
 
 ;;将outline的快捷键改为 C-o
 (setq outline-minor-mode-prefix [(control o)])
@@ -82,3 +82,8 @@
 (provide 'init-keybindings)
 
 
+;;设置multiple-cursors快捷键
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)

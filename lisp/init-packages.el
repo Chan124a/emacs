@@ -138,3 +138,7 @@ instance" (mode-io-correlate " -forward-search %b %n ") " %o"))))
 (require 'highlight-symbol)
 
 (provide 'init-packages)
+
+;;启用multiple-cursors
+(require 'multiple-cursors)
+
