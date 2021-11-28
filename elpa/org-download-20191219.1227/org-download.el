@@ -98,6 +98,7 @@ See `org-download--dir-1' for more info."
 
 (defcustom org-download-heading-lvl 0
   "Heading level to be used in `org-download--dir-2'."
+  "表示最多取到几级标题"
   :type 'integer)
 (make-variable-buffer-local 'org-download-heading-lvl)
 
@@ -354,6 +355,7 @@ COMMAND is a format-style string with two slots for LINK and FILENAME."
 The screenshot tool is determined by `org-download-screenshot-method'."
   (interactive)
   (let ((default-directory "~"))
+    ;;file-name-directory返回目录路径。e:/org/test返回e:/org/，e:/org/test/返回e:/org/test/
     (make-directory (file-name-directory org-download-screenshot-file) t)
     (if (functionp org-download-screenshot-method)
         (funcall org-download-screenshot-method
@@ -361,6 +363,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
       (shell-command-to-string
        (format org-download-screenshot-method
                org-download-screenshot-file))))
+  ;;org-download-screenshot-file是c:/Users/123/AppData/Local/Temp/screenshot.png，截图软件每次都会把截图保存在这里
   (org-download-image org-download-screenshot-file))
 
 (declare-function org-attach-dir "org-attach")
