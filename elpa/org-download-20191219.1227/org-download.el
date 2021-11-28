@@ -228,7 +228,11 @@ For example:
 (defun org-download--dir-1 ()
   "Return the first part of the directory path for `org-download--dir'.
 It's `org-download-image-dir', unless it's nil.  Then it's \".\"."
-  (or org-download-image-dir "."))
+  (let* ((file-name-dir buffer-file-name)
+         (file-name (file-name-base file-name-dir))
+	 (org-download-image-dir "e:/org/images")
+         (dir-1 (expand-file-name file-name (or org-download-image-dir "."))))
+	 dir-1))
 
 (defun org-download--dir-2 ()
   "Return the second part of the directory path for `org-download--dir'.
