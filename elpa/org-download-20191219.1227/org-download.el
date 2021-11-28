@@ -97,8 +97,8 @@ See `org-download--dir-1' for more info."
 (make-variable-buffer-local 'org-download-image-dir)
 
 (defcustom org-download-heading-lvl 0
-  "Heading level to be used in `org-download--dir-2'."
-  "表示最多取到几级标题"
+  "Heading level to be used in `org-download--dir-2'.
+  表示最多取到几级标题"
   :type 'integer)
 (make-variable-buffer-local 'org-download-heading-lvl)
 
@@ -231,7 +231,6 @@ For example:
 It's `org-download-image-dir', unless it's nil.  Then it's \".\"."
   (let* ((file-name-dir buffer-file-name)
          (file-name (file-name-base file-name-dir))
-	 (org-download-image-dir "e:/org/images")
          (dir-1 (expand-file-name file-name (or org-download-image-dir "."))))
 	 dir-1))
 
