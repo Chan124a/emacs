@@ -1,7 +1,7 @@
 ;;关闭工具栏
 (tool-bar-mode -1)
 ;;关闭文件滑动控件
-(scroll-bar-mode -1)
+;;(scroll-bar-mode -1)
 
 ;;关闭启动帮助页面
 (setq inhibit-splash-screen 1)

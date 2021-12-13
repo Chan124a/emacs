@@ -88,7 +88,7 @@ instance" (mode-io-correlate " -forward-search %b %n ") " %o"))))
 (global-company-mode 1)
 
 ;;默认打开主题monokai
-(load-theme 'monokai 1)
+;;(load-theme 'monokai 1)
 
 ;;启用swiper
 (ivy-mode 1)
