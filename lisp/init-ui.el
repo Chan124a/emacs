@@ -12,4 +12,9 @@
 ;;高亮显示当前行
 (global-hl-line-mode t) ;;t相当于1
 
+;;开启全局行号显示
+;;(global-linum-mode t) ;;这个开了之后会导致org文件卡顿，所以我关闭了
+(global-display-line-numbers-mode t)
+
+
 (provide 'init-ui)
