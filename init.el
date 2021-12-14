@@ -15,6 +15,16 @@
 ;;(require 'ob-tangle)
 ;;(org-babel-load-file (expand-file-name "cpd.org" user-emacs-directory))
 
+;;下面这个是为了解决中文卡顿的问题，参考https://emacs-china.org/t/topic/5508/7
+(add-to-list 'after-make-frame-functions
+	     (lambda (new-frame)
+	       (select-frame new-frame)
+		;; English Font
+		(set-face-attribute 'default nil :font "Fira Mono 12")
+		;; Chinese Font
+		(dolist (charset '(kana han symbol cjk-misc bopomofo))
+		  (set-fontset-font (frame-parameter nil 'font)
+		         charset (font-spec :family "Noto Sans CJK SC" :size 16)))))
 
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
