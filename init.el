@@ -26,8 +26,8 @@
 		  (set-fontset-font (frame-parameter nil 'font)
 		         charset (font-spec :family "Noto Sans CJK SC" :size 16)))))
 
-(add-to-list 'load-path "~/.emacs.d/lisp")
 
+(add-to-list 'load-path "~/.emacs.d/lisp")
 ;;定义快速启动配置文件的函数，这个必须放在(require 'init-keybindings.el)前面，因为其会调用该函数
 (defun open-my-init-file()
   (interactive)

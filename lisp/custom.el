@@ -44,7 +44,7 @@
       (:strike-through t)))))
  '(package-selected-packages
    (quote
-    (multiple-cursors popwin auctex counsel swiper js2-mode monokai-theme smartparens htmlize company)))
+    (pyim pyim-basedict popwin auctex counsel swiper js2-mode monokai-theme smartparens htmlize company)))
  '(popwin:popup-window-position (quote right))
  '(popwin:popup-window-width 70)
  '(word-wrap nil))
