@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
+;; define-obsolete-function-alias用于设置宏别名
 (define-obsolete-function-alias 'after-load 'with-eval-after-load "")
 
 

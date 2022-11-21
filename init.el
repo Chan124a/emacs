@@ -7,7 +7,7 @@
 ;;; Code:
 
 ;; Produce backtraces when errors occur: can be helpful to diagnose startup issues
-;;(setq debug-on-error t)
+(setq debug-on-error t)
 
 (let ((minver "26.1"))
   (when (version< emacs-version minver)
@@ -15,7 +15,8 @@
 (when (version< emacs-version "27.1")
   (message "Your Emacs is old, and some functionality in this config will be disabled. Please upgrade if possible."))
 
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(setq user-emacs-directory "~/emacs.d") ;;user-emacs-directorym默认为~/.emacs.d
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory)) ;;expand-file-name用于获取绝对路径
 (require 'init-benchmarking) ;; Measure startup time
 
 (defconst *spell-check-support-enabled* nil) ;; Enable with t if you prefer
@@ -23,7 +24,7 @@
 
 
 ;; Adjust garbage collection thresholds during startup, and thereafter
-
+;; 垃圾回收机制
 (let ((normal-gc-cons-threshold (* 20 1024 1024))
       (init-gc-cons-threshold (* 128 1024 1024)))
   (setq gc-cons-threshold init-gc-cons-threshold)
