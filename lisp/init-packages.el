@@ -1,7 +1,7 @@
 (require 'package)
 (package-initialize)
-(setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
-			 ("melpa" . "http://elpa.emacs-china.org/melpa/")))
+(setq package-archives '(("gnu"   . "http://1.15.88.122/gnu/")
+			 ("melpa" . "http://1.15.88.122/melpa/")))
 ;; 注意 elpa.emacs-china.org 是 Emacs China 中文社区在国内搭建的一个 ELPA 镜像
 
  ;; C - Common Lisp Extension
@@ -121,17 +121,17 @@ instance" (mode-io-correlate " -forward-search %b %n ") " %o"))))
 ;;(require 'org-download)
 ;;;; Drag-and-drop to `dired`
 ;;(add-hook 'dired-mode-hook 'org-download-enable)
-(use-package org-download
-  :after org
-  :defer nil
-  :custom
-  (org-download-method 'directory)
-  (org-download-image-dir "e:/org/images")
-  (org-download-screenshot-method "e:/IrfanView/i_view64.exe /capture=4 /convert=\"%s\"")
-  :bind
-  ("C-S-y" . org-download-screenshot)
-  :config
-  (require 'org-download))
+;;(use-package org-download
+;;  :after org
+;;  :defer nil
+;;  :custom
+;;  (org-download-method 'directory)
+;;  (org-download-image-dir "e:/org/images")
+;;  (org-download-screenshot-method "e:/IrfanView/i_view64.exe /capture=4 /convert=\"%s\"")
+;;  :bind
+;;  ("C-S-y" . org-download-screenshot)
+;;  :config
+;;  (require 'org-download))
 
 ;;启用yasnippet
 (require 'yasnippet)
@@ -154,3 +154,15 @@ instance" (mode-io-correlate " -forward-search %b %n ") " %o"))))
 ;;启用multiple-cursors
 (require 'multiple-cursors)
 
+;;启用pyim
+(require 'pyim)
+(require 'pyim-basedict)
+(require 'pyim-cregexp-utils)
+(pyim-basedict-enable)
+(setq default-input-method "pyim")
+(setq pyim-page-length 5)
+(pyim-default-scheme 'quanpin)
+(global-set-key (kbd "C-\\") 'toggle-input-method)
+
+;;
+(require 'org-tempo)
