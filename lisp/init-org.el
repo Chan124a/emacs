@@ -384,6 +384,7 @@ typical word processor."
       (sql . t)
       (sqlite . t)))))
 
-
+;;启用<s补全代码功能
+(require 'org-tempo)
 (provide 'init-org)
 ;;; init-org.el ends here

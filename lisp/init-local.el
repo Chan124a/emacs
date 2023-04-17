@@ -43,5 +43,9 @@
 ;; 设置这个是为了让magit的ssh服务能够正常运行
 (setenv "HOME" "C:\\Users\\123")
 
+;;加快tramp的启动
+(setq tramp-auto-save-directory "~/tmp/tramp/")
+(setq tramp-chunksize 2000)
+
 (provide 'init-local)
 ;;; init-locales.el ends here
