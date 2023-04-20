@@ -1,0 +1,2 @@
+;;; Generated package description from dhall-mode.el  -*- no-byte-compile: t -*-
+(define-package "dhall-mode" "20220519.1115" "Major mode for the dhall configuration language" '((emacs "24.4") (reformatter "0.3")) :commit "c77f1c1e75b6d2725019c5275fc102ae98d25628" :authors '(("Sibi Prabakaran" . "sibi@psibi.in")) :maintainer '("Sibi Prabakaran" . "sibi@psibi.in") :keywords '("languages") :url "https://github.com/psibi/dhall-mode")
