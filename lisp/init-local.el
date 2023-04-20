@@ -47,5 +47,7 @@
 (setq tramp-auto-save-directory "~/tmp/tramp/")
 (setq tramp-chunksize 2000)
 
+;;将C-h绑定为删除光标前字符
+(global-set-key (kbd "C-h") 'paredit-backward-delete)
 (provide 'init-local)
 ;;; init-locales.el ends here
