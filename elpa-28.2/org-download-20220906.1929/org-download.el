@@ -100,7 +100,8 @@ See `org-download--dir-1' for more info."
 (make-variable-buffer-local 'org-download-image-dir)
 
 (defcustom org-download-heading-lvl 0
-  "Heading level to be used in `org-download--dir-2'."
+  "Heading level to be used in `org-download--dir-2'.
+  表示最多取到几级标题"
   :type
   '(choice integer (const :tag "None" nil)))
 (make-variable-buffer-local 'org-download-heading-lvl)
@@ -248,7 +249,11 @@ For example:
 (defun org-download--dir-1 ()
   "Return the first part of the directory path for `org-download--dir'.
 It's `org-download-image-dir', unless it's nil.  Then it's \".\"."
-  (or org-download-image-dir "."))
+  (let* ((file-name-dir buffer-file-name)
+         (file-name (file-name-base file-name-dir))
+	 (org-download-image-dir "e:/org/images")
+         (dir-1 (expand-file-name file-name (or org-download-image-dir "."))))
+	 dir-1))
 
 (defun org-download--dir-2 ()
   "Return the second part of the directory path for `org-download--dir'.
@@ -384,6 +389,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
          (org-download-screenshot-file
           (if basename
               (concat screenshot-dir basename) org-download-screenshot-file)))
+    ;;file-name-directory返回目录路径。e:/org/test返回e:/org/，e:/org/test/返回e:/org/test/
     (make-directory screenshot-dir t)
     (if (functionp org-download-screenshot-method)
         (funcall org-download-screenshot-method
