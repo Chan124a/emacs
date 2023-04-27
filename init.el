@@ -152,6 +152,8 @@
 
 (require 'init-direnv)
 
+(require 'init-org-download)
+(require 'init-yasnippet)
 
 
 ;; Allow access from emacsclient
