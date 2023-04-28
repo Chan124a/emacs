@@ -154,6 +154,7 @@
 
 (require 'init-org-download)
 (require 'init-yasnippet)
+(require 'init-cpp)
 
 
 ;; Allow access from emacsclient
