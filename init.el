@@ -155,6 +155,7 @@
 (require 'init-org-download)
 (require 'init-yasnippet)
 (require 'init-cpp)
+;;(require 'init-auctex)
 
 
 ;; Allow access from emacsclient
