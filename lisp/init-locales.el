@@ -20,7 +20,12 @@
 (prefer-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
 (unless (eq system-type 'windows-nt)
-  (set-selection-coding-system 'utf-8))
+  (set-selection-coding-system 'utf-8)
+  ;; 下面两行代码是参考https://emacs-china.org/t/emacs-utf-8/21143/24,用于解决每次退出emacs都会询问编码格式的问题
+  (set-locale-environment "en_US.UTF-8") 
+  (set-language-environment "UTF-8")
+  (prefer-coding-system 'utf-8-dos)
+  (setq locale-coding-system 'utf-8-dos))
 
 (provide 'init-locales)
 ;;; init-locales.el ends here

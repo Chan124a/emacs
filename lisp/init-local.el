@@ -15,5 +15,8 @@
 
 ;;将C-h绑定为删除光标前字符
 (global-set-key (kbd "C-h") 'paredit-backward-delete)
+
+:;墨水屏黑白主题
+(require 'paperlike-theme)
 (provide 'init-local)
 ;;; init-locales.el ends here
