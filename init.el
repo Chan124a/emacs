@@ -1,6 +1,14 @@
 (require 'package)
-(add-to-list 'package-archives
-         '("melpa" . "http://melpa.org/packages/") t)
+(setq package-check-signature nil)
+(setq user-emacs-directory "~/code/emacs-c-ide-demo") ;;user-emacs-directorym默认为~/.emacs.d
+(add-to-list 'load-path "~/code/emacs-c-ide-demo/custom")
+(setq package-user-dir
+      (expand-file-name (format "elpa-%s.%s" emacs-major-version emacs-minor-version)
+                        user-emacs-directory))
+
+(setq package-archives '(("gnu" . "http://1.15.88.122/gnu/")
+                           ("melpa" . "http://1.15.88.122/melpa/")
+                           ("org" . "http://1.15.88.122/org/")))
 
 (package-initialize)
 
@@ -13,7 +21,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(add-to-list 'load-path "~/.emacs.d/custom")
 
 (require 'setup-general)
 (if (version< emacs-version "24.4")
