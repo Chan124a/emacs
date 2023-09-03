@@ -27,4 +27,13 @@ instance" (mode-io-correlate " -forward-search %b %n ") " %o"))))
 (assq-delete-all 'output-pdf TeX-view-program-selection)
 (add-to-list 'TeX-view-program-selection '(output-pdf "Sumatra PDF"))))
 
+;;设置outline
+
+(define-key outline-minor-mode-map (kbd "C-l")
+    (lookup-key outline-minor-mode-map (kbd "C-c @")))
+;;设置自动打开outline-mode
+(add-hook 'LaTeX-mode-hook 'outline-minor-mode)
+;;设置打开tex文件自动折叠
+(add-hook 'LaTeX-mode-hook 'outline-hide-body)
+
 (provide 'init-auctex)

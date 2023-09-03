@@ -155,7 +155,8 @@
 (require 'init-org-download)
 (require 'init-yasnippet)
 (require 'init-cpp)
-;;(require 'init-auctex)
+(require 'init-auctex)
+(require 'init-lsp-bridge)
 
 
 ;; Allow access from emacsclient
