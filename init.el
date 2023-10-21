@@ -36,8 +36,18 @@
 ;; function-args
 ;; (require 'function-args)
 ;; (fa-config-default)
-;; (define-key c-mode-map  [(tab)] 'company-complete)
-;; (define-key c++-mode-map  [(tab)] 'company-complete)
+
+;; To use company-mode with Clang
+(setq company-backends (delete 'company-semantic company-backends))
+(define-key c-mode-map  [(tab)] 'company-complete)
+(define-key c++-mode-map  [(tab)] 'company-complete)
+
+;; 使用c++标准库补全
+(add-to-list 'company-backends 'company-c-headers)
+;; 将 /usr/include/c++/4.8/ 替换为c++标准库路径
+;; 同时,需要将c++标准库路径也添加到.dir-locals.el文件里
+(add-to-list 'company-c-headers-path-system "/usr/include/c++/4.8/") 
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

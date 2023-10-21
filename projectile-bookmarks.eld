@@ -1,1 +1,1 @@
-("~/code/emacs-c-ide-demo/")
+("~/code/emacs-c-ide-demo/" "~/code/c-demo-project-master/" "~/code/workflow/")
