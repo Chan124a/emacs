@@ -7,4 +7,9 @@
 (require 'lsp-bridge)
 (global-lsp-bridge-mode)
 
+;; 打开调试日志
+(setq lsp-bridge-enable-log t)
+
+(setq lsp-bridge-python-command "python.exe")
+
 (provide 'init-lsp-bridge)
