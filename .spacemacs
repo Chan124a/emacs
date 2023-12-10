@@ -45,8 +45,12 @@ This function should only modify configuration layer settings."
      helm
      ;; lsp
      ;; markdown
-     multiple-cursors
+     (multiple-cursors :variables multiple-cursors-backend 'mc)
      org
+     (latex :variables
+            latex-backend 'lsp
+            ;latex-enable-folding t
+            )
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -67,7 +71,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(evil-escape)
 
    ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+   dotspacemacs-frozen-packages '(org-download)
 
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
@@ -126,7 +130,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
    ;; This is an advanced option and should not be changed unless you suspect
-   ;; performance issues due to garbage collection operations.
+   ;; performance issues due tno garbage collection operations.
    ;; (default '(100000000 0.1))
    dotspacemacs-gc-cons '(100000000 0.1)
 
@@ -420,7 +424,7 @@ It should only modify the values of Spacemacs settings."
    ;;   :size-limit-kb 1000)
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
 
    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
    ;; (default 'evil)
@@ -562,11 +566,9 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
 This function is called only while dumping Spacemacs configuration. You can
-`require' or `load' the libraries of your choice that will be included in the
+`require' or `load' the libraries of your choice that pwill be included in the
 dump."
 
-;;启用<s补全代码功能
-(require 'org-tempo)
 )
 
 
@@ -576,9 +578,63 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;;启用org-download
+  (require 'org-download)
+  ;; Drag-and-drop to `dired`
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  (use-package org-download
+    :after org
+    :defer nil
+    :custom
+    (org-download-method 'directory)
+    (org-download-image-dir "e:/org/images")
+    (org-download-heading-lvl 0)
+    (org-download-screenshot-method "e:/IrfanView/i_view64.exe /capture=4 /convert=\"%s\"")
+    :bind
+    ("C-S-y" . org-download-screenshot)
+    :config
+    (require 'org-download))
 
+  ;;启用<s补全代码功能
+  (require 'org-tempo)
+
+  ;;将C-h绑定为删除光标前字符
+  (global-set-key (kbd "C-h") 'paredit-backward-delete)
+
+  ;;设置multiple-cursors多行编辑快捷键
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-+") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  ;; ;; From active region to multiple cursors:
+  ;; (global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
+  ;; (global-set-key (kbd "C-c c c") 'mc/edit-lines)
+  ;; (global-set-key (kbd "C-c c e") 'mc/edit-ends-of-lines)
+  ;; (global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
+
+  ;;绑定打开最近文件的快捷键
+  (global-set-key (kbd "C-x C-r") 'recentf-open-files)
 )
 
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(evil-tex auctex math-symbol-lists multiple-cursors ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired toc-org term-cursor symon symbol-overlay string-inflection string-edit-at-point spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-cliplink openp-junk-file nameless multi-line macrostep lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-descbinds helm-ag google-translate golden-ratio gnuplot flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile all-the-icons aggressive-indent ace-link ace-jump-helm-line)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
