@@ -655,6 +655,8 @@ before packages are loaded."
       (setq process-coding-system-alist
             (cons `(,nov-unzip-program . (gbk . gbk))
                   process-coding-system-alist))))
+
+  (setq org-latex-pdf-process '("tectonic %f"))
 )
 
 
