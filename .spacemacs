@@ -568,7 +568,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
     '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
       ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
       ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-      ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))
+      ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))d
 
 ;; enabel outline-minor-mode in latex-mode
 ;; 由于outline-minor-mode-prefix的设置必须在加载outline-mode之前设置才会生效
