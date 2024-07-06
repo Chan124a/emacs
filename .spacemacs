@@ -681,6 +681,8 @@ before packages are loaded."
             (lambda ()
               (setq TeX-engine 'xetex)       ; use xelatex default
               ))
+
+  (setq file-name-coding-system 'chinese-gb18030)
 )
 
 
