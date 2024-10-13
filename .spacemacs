@@ -646,6 +646,8 @@ before packages are loaded."
     (setq org-todo-keywords
           '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)"))
           )
+    ;; 关闭org自动缩进功能
+    (electric-indent-mode -1)
     )
 
   (global-set-key (kbd "C-x C-a") 'magit)
@@ -684,53 +686,7 @@ before packages are loaded."
 
   (setq file-name-coding-system 'chinese-gb18030)
 
-  (with-eval-after-load "org"
-  (when (version-list-= (version-to-list org-version) '(9 4 3))
-    (defun org-return-fix (fun &rest args)
-      "Fix https://emacs.stackexchange.com/questions/64886."
-      (let* ((context (if org-return-follows-link (org-element-context)
-            (org-element-at-point)))
-             (element-type (org-element-type context)))
-    (if (eq element-type 'src-block)
-        (apply #'org--newline args)
-      (apply fun args))))
-    (advice-add 'org-return :around #'org-return-fix)))
 
-(with-eval-after-load "org-src"
-  (when (version-list-= (version-to-list org-version) '(9 4 3))
-    (defun org-src--contents-for-write-back ()
-      "Return buffer contents in a format appropriate for write back.
-Assume point is in the corresponding edit buffer."
-      (let ((indentation-offset
-         (if org-src--preserve-indentation 0
-           (+ (or org-src--block-indentation 0)
-          (if (memq org-src--source-type '(example-block src-block))
-              org-src--content-indentation
-            0))))
-        (use-tabs? (and (> org-src--tab-width 0) t))
-        (source-tab-width org-src--tab-width)
-        (contents (org-with-wide-buffer (buffer-string)))
-        (write-back org-src--allow-write-back))
-    (with-temp-buffer
-      ;; Reproduce indentation parameters from source buffer.
-      (setq indent-tabs-mode use-tabs?)
-      (when (> source-tab-width 0) (setq tab-width source-tab-width))
-      ;; Apply WRITE-BACK function on edit buffer contents.
-      (insert (org-no-properties contents))
-      (goto-char (point-min))
-      (when (functionp write-back) (save-excursion (funcall write-back)))
-      ;; Add INDENTATION-OFFSET to every non-empty line in buffer,
-      ;; unless indentation is meant to be preserved.
-      (when (> indentation-offset 0)
-        (while (not (eobp))
-          (skip-chars-forward " \t")
-          ;; (unless (eolp)     ;ignore blank lines
-          (let ((i (current-column)))
-        (delete-region (line-beginning-position) (point))
-        (indent-to (+ i indentation-offset)))
-          ;;)
-          (forward-line)))
-      (buffer-string))))))
 )
 
 
