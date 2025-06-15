@@ -48,16 +48,17 @@ This function should only modify configuration layer settings."
      ;; markdown
      (multiple-cursors :variables multiple-cursors-backend 'mc)
      (org :variables org-capture-templates `(
-	                                          ("p" "Protocol" plain (file "e:/org/test.org")
-                                             "%:initial")
-	                                          ("L" "Protocol Link" plain (file "e:/org/test.org")
-                                             "[[%:link][%:description]]")
-                                            ))
+                                             ("p" "Protocol" plain (file "/Users/cpd/my_code/org/images")
+                                              "%:initial")
+                                             ("L" "Protocol Link" plain (file "/Users/cpd/my_code/org/images")
+                                              "[[%:link][%:description]]")
+                                             ))
      chinese
      (latex :variables
             latex-backend 'lsp
             latex-enable-folding t
             )
+     (c-c++ :variables c-c++-backend 'lsp-clangd)
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -65,7 +66,8 @@ This function should only modify configuration layer settings."
      ;; syntax-checking
      ;; version-control
      epub
-     treemacs)
+     treemacs
+     go)
 
 
    ;; List of additional packages that will be installed without being wrapped
@@ -251,7 +253,7 @@ It should only modify the values of Spacemacs settings."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(spacemacs-light
                          spacemacs-dark)
-                         
+
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -556,7 +558,7 @@ default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
   (spacemacs/load-spacemacs-env)
-)
+  )
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -564,25 +566,25 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-(setq configuration-layer-elpa-archives
-    '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-      ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-      ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-      ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))d
+  (setq configuration-layer-elpa-archives
+        '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+          ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+          ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+          ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))d
 
-;; enabel outline-minor-mode in latex-mode
-;; 由于outline-minor-mode-prefix的设置必须在加载outline-mode之前设置才会生效
-;; 为了方便统一管理outline相关配置,将outline配置都统一放在user-init()里
-(add-hook 'LaTeX-mode-hook #'outline-minor-mode)
-(add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
-(setq outline-minor-mode-prefix "\M-o")
-(setq TeX-outline-extra
-      '(
-        ("\\\\begin{theorem}" 3)
-        ("\\\\begin{proof}" 3)
+  ;; enabel outline-minor-mode in latex-mode
+  ;; 由于outline-minor-mode-prefix的设置必须在加载outline-mode之前设置才会生效
+  ;; 为了方便统一管理outline相关配置,将outline配置都统一放在user-init()里
+  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
+  (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
+  (setq outline-minor-mode-prefix "\M-o")
+  (setq TeX-outline-extra
+        '(
+          ("\\\\begin{theorem}" 3)
+          ("\\\\begin{proof}" 3)
+          )
         )
-      )
-)
+  )
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
@@ -590,7 +592,7 @@ This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that pwill be included in the
 dump."
 
-)
+  )
 
 
 (defun dotspacemacs/user-config ()
@@ -608,9 +610,9 @@ before packages are loaded."
     :defer nil
     :custom
     (org-download-method 'directory)
-    (org-download-image-dir "e:/org/images")
+    (org-download-image-dir "/Users/cpd/my_code/org/images")
     (org-download-heading-lvl 0)
-    (org-download-screenshot-method "e:/IrfanView/i_view64.exe /capture=4 /convert=\"%s\"")
+    (org-download-screenshot-method "screencapture -i %s")
     :bind
     ("C-S-y" . org-download-screenshot)
     :config
@@ -644,7 +646,7 @@ before packages are loaded."
     ;; here goes your Org config :)
     ;; ....
     (setq org-todo-keywords
-          '((sequence "TODO(t)" "DOING(i)" "|" "DONE(d)"))
+          '((sequence "TODO(t)" "DOING(i!)" "|" "DONE(d!)"))
           )
     ;; 关闭org自动缩进功能
     (electric-indent-mode -1)
@@ -676,18 +678,41 @@ before packages are loaded."
   (require 'org-protocol)
 
   ;;设置xelatex为auctux默认编辑器
- ; (add-hook 'LaTeX-mode-hook
- ;           #'(lambda ()
- ;               (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t" TeX-run-TeX nil t))))
+                                        ; (add-hook 'LaTeX-mode-hook
+                                        ;           #'(lambda ()
+                                        ;               (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t" TeX-run-TeX nil t))))
   (add-hook 'LaTeX-mode-hook
             (lambda ()
               (setq TeX-engine 'xetex)       ; use xelatex default
               ))
 
-  (setq file-name-coding-system 'chinese-gb18030)
+  ;; mac系统下文件路径会乱码。下面两行设置可以解决这个问题
+  (prefer-coding-system 'gb18030)
+  (prefer-coding-system 'utf-8)
 
+  ;;设置agenda view的搜索目录
+  (setq org-agenda-files '("~/my_code/org/agenda/"))
+  (defun air-org-skip-subtree-if-priority (priority)
+    "Skip an agenda subtree if it has a priority of PRIORITY.
+PRIORITY may be one of the characters ?A, ?B, or ?C."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+          (pri-value (* 1000 (- org-lowest-priority priority)))
+          (pri-current (org-get-priority (thing-at-point 'line t))))
+      (if (= pri-value pri-current)
+          subtree-end
+        nil)))
+  (setq org-agenda-custom-commands
+        '(("c" "Simple agenda view"
+           ((tags "PRIORITY=\"A\""
+                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                   (org-agenda-overriding-header "High-priority unfinished tasks:")))
+            (agenda "")
+            (alltodo ""
+                     ((org-agenda-skip-function
+                       '(or (air-org-skip-subtree-if-priority ?A)
+                            (org-agenda-skip-if nil '(scheduled deadline))))))))))
 
-)
+  )
 
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -697,20 +722,19 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("f3f7f6d6b08c01b78ee82bc864be47fbfbb15f15382c4f5f458666166c51fbe5" default))
- '(package-selected-packages
-   '(gnu-elpa-keyring-update nov esxml kv evil-mc yasnippet-snippets ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired toc-org term-cursor symon symbol-overlay string-inflection string-edit-at-point spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-cliplink open-junk-file nameless multiple-cursors multi-line macrostep lsp-ui lsp-treemacs lsp-origami lsp-latex lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link fuzzy flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-tex evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word company-reftex company-math company-auctex column-enforce-mode clean-aindent-mode centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile auctex-latexmk all-the-icons aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)
-
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(custom-safe-themes
+     '("f3f7f6d6b08c01b78ee82bc864be47fbfbb15f15382c4f5f458666166c51fbe5" default))
+   '(package-selected-packages
+     '(gnu-elpa-keyring-update nov esxml kv evil-mc yasnippet-snippets ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired toc-org term-cursor symon symbol-overlay string-inflection string-edit-at-point spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-cliplink open-junk-file nameless multiple-cursors multi-line macrostep lsp-ui lsp-treemacs lsp-origami lsp-latex lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link fuzzy flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-tex evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word company-reftex company-math company-auctex column-enforce-mode clean-aindent-mode centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile auctex-latexmk all-the-icons aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+  )
