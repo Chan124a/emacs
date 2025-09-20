@@ -44,6 +44,7 @@ This function should only modify configuration layer settings."
      emacs-lisp
      git
      helm
+     (shell :variables shell-default-shell 'vterm)
      ;; lsp
      ;; markdown
      (multiple-cursors :variables multiple-cursors-backend 'mc)
@@ -57,6 +58,7 @@ This function should only modify configuration layer settings."
      (latex :variables
             latex-backend 'lsp
             latex-enable-folding t
+            TeX-electric-escape t ;;将\键设置为可以快速输入macro
             )
      (c-c++ :variables c-c++-backend 'lsp-clangd)
      ;; (shell :variables
@@ -67,7 +69,12 @@ This function should only modify configuration layer settings."
      ;; version-control
      epub
      treemacs
-     go)
+     auto-completion
+     syntax-checking
+     (go :variables
+         go-format-before-save t
+         go-use-golangci-lint t)
+     )
 
 
    ;; List of additional packages that will be installed without being wrapped
@@ -78,7 +85,7 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(evil-escape)
+   dotspacemacs-additional-packages '(evil-escape ob-go)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(org-download)
@@ -678,13 +685,15 @@ before packages are loaded."
   (require 'org-protocol)
 
   ;;设置xelatex为auctux默认编辑器
-                                        ; (add-hook 'LaTeX-mode-hook
-                                        ;           #'(lambda ()
-                                        ;               (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t" TeX-run-TeX nil t))))
+  ;; (add-hook 'LaTeX-mode-hook
+  ;;           #'(lambda ()
+  ;;               (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t" TeX-run-TeX nil t))))
   (add-hook 'LaTeX-mode-hook
             (lambda ()
               (setq TeX-engine 'xetex)       ; use xelatex default
               ))
+  ;;下面这个配置不知道有啥用，spacemacs的latex layer会自动设置为true，所以这里不用设置
+  ;;(setq reftex-plug-into-AUCTeX t)
 
   ;; mac系统下文件路径会乱码。下面两行设置可以解决这个问题
   (prefer-coding-system 'gb18030)
@@ -712,6 +721,38 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
                        '(or (air-org-skip-subtree-if-priority ?A)
                             (org-agenda-skip-if nil '(scheduled deadline))))))))))
 
+  ;; ob-go enables Org-Babel support for evaluating go code.
+  (require 'ob-go)
+
+  ;; disable menu bar on Mac
+  (unless (eq window-system 'mac)
+    (menu-bar-mode 0))
+
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-w C-r") 'xref-find-references)
+              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
+              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
+              (local-set-key (kbd "C-w C-w") 'kill-region)
+              (local-set-key (kbd "C-w C-b") 'xref-go-back)
+              ))
+  (add-hook 'c++-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-w C-r") 'xref-find-references)
+              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
+              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
+              (local-set-key (kbd "C-w C-w") 'kill-region)
+              (local-set-key (kdb "C-w C-b") 'xref-pop-marker-stack)
+              ))
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-w C-r") 'xref-find-references)
+              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
+              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
+              (local-set-key (kbd "C-w C-w") 'kill-region)
+              (local-set-key (kdb "C-w C-b") 'xref-pop-marker-stack)
+              ))
+
   )
 
 
@@ -728,9 +769,44 @@ This function is called at the very end of Spacemacs initialization."
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
    '(custom-safe-themes
-     '("f3f7f6d6b08c01b78ee82bc864be47fbfbb15f15382c4f5f458666166c51fbe5" default))
+     '("a0ac98a1bde5d6336295fd350155a4aac1d63c53c1b3773062271074d16ebeb5"
+       "7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf"
+       "f3f7f6d6b08c01b78ee82bc864be47fbfbb15f15382c4f5f458666166c51fbe5" default))
    '(package-selected-packages
-     '(gnu-elpa-keyring-update nov esxml kv evil-mc yasnippet-snippets ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired toc-org term-cursor symon symbol-overlay string-inflection string-edit-at-point spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc smeargle restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer orgit org-superstar org-rich-yank org-projectile org-present org-pomodoro org-mime org-download org-cliplink open-junk-file nameless multiple-cursors multi-line macrostep lsp-ui lsp-treemacs lsp-origami lsp-latex lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete htmlize holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates git-timemachine git-modes git-messenger git-link fuzzy flycheck-pos-tip flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-tex evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word company-reftex company-math company-auctex column-enforce-mode clean-aindent-mode centered-cursor-mode auto-yasnippet auto-highlight-symbol auto-compile auctex-latexmk all-the-icons aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+     '(ac-ispell ace-jump-helm-line ace-link aggressive-indent all-the-icons
+                 auctex-latexmk auto-compile auto-highlight-symbol auto-yasnippet
+                 centered-cursor-mode clean-aindent-mode column-enforce-mode
+                 company-auctex company-math company-reftex define-word devdocs
+                 diminish dired-quiCk-Sort dotenv-mode drag-stuff dumb-jump
+                 editorconfig elisp-def elisp-slime-nav emr esxml eval-sexp-fu
+                 evil-anzu evil-args evil-cleverparens evil-collection evil-escape
+                 evil-evilified-state evil-exchange evil-goggles evil-iedit-state
+                 evil-indent-plus evil-lion evil-lisp-state evil-matchit evil-mc
+                 evil-nerd-commenter evil-numbers evil-org evil-surround evil-tex
+                 evil-textobj-line evil-tutor evil-unimpaired
+                 evil-visual-mark-mode evil-visualstar expand-region eyebrowse
+                 fancy-battery flx-ido flycheck-elsa flycheck-package
+                 flycheck-pos-tip fuzzy git-link git-messenger git-modes
+                 git-timemachine gitignore-templates gnu-elpa-keyring-update
+                 gnuplot golden-ratio google-translate helm-ag helm-c-yasnippet
+                 helm-company helm-descbinds helm-git-grep helm-ls-git helm-lsp
+                 helm-make helm-mode-manager helm-org helm-org-rifle
+                 helm-projectile helm-purpose helm-swoop helm-themes helm-xref
+                 hide-comnt highlight-indentation highlight-numbers
+                 highlight-parentheses hl-todo holy-mode htmlize hungry-delete
+                 hybrid-mode indent-guide info+ inspector kv link-hint lorem-ipsum
+                 lsp-latex lsp-origami lsp-treemacs lsp-ui macrostep multi-line
+                 multiple-cursors nameless nov ob-go open-junk-file org-cliplink
+                 org-download org-mime org-pomodoro org-present org-projectile
+                 org-rich-yank org-superstar orgit overseer paradox
+                 password-generator pcre2el popwin quickrun rainbow-delimiters
+                 request restart-emacs smeargle space-doc spaceline
+                 spacemacs-purpose-popwin spacemacs-whitespace-cleanup
+                 string-edit-at-point string-inflection symbol-overlay symon
+                 term-cursor toc-org treemacs-icons-dired treemacs-magit
+                 treemacs-persp treemacs-projectile undo-tree use-package uuidgen
+                 vi-tilde-fringe vim-powerline volatile-highlights which-key winum
+                 writeroom-mode ws-butler yasnippet-snippets)))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
