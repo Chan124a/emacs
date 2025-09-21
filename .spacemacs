@@ -58,7 +58,12 @@ This function should only modify configuration layer settings."
      (latex :variables
             latex-backend 'lsp
             latex-enable-folding t
-            TeX-electric-escape t ;;将\键设置为可以快速输入macro
+            TeX-outline-extra
+            '(
+              ("\\\\begin{theorem}" 3)
+              ("\\\\begin{proof}" 3)
+              )
+            outline-minor-mode-prefix "\C-c\C-o"
             )
      (c-c++ :variables c-c++-backend 'lsp-clangd)
      ;; (shell :variables
@@ -577,20 +582,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
           ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
           ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-          ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))d
-
-  ;; enabel outline-minor-mode in latex-mode
-  ;; 由于outline-minor-mode-prefix的设置必须在加载outline-mode之前设置才会生效
-  ;; 为了方便统一管理outline相关配置,将outline配置都统一放在user-init()里
-  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
-  (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
-  (setq outline-minor-mode-prefix "\M-o")
-  (setq TeX-outline-extra
-        '(
-          ("\\\\begin{theorem}" 3)
-          ("\\\\begin{proof}" 3)
-          )
-        )
+          ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))
   )
 
 (defun dotspacemacs/user-load ()
