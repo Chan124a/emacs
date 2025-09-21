@@ -593,13 +593,7 @@ dump."
 
   )
 
-
-(defun dotspacemacs/user-config ()
-  "Configuration for user code:
-This function is called at the very end of Spacemacs startup, after layer
-configuration.
-Put your configuration code here, except for variables that should be set
-before packages are loaded."
+(defun org-config()
   ;;启用org-download
   (require 'org-download)
   ;; Drag-and-drop to `dired`
@@ -620,27 +614,6 @@ before packages are loaded."
   ;;启用<s补全代码功能
   (require 'org-tempo)
 
-  ;;将C-h绑定为删除光标前字符
-  (global-set-key (kbd "C-h") 'paredit-backward-delete)
-
-  ;;设置multiple-cursors多行编辑快捷键
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-+") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-  ;; ;; From active region to multiple cursors:
-  ;; (global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
-  ;; (global-set-key (kbd "C-c c c") 'mc/edit-lines)
-  ;; (global-set-key (kbd "C-c c e") 'mc/edit-ends-of-lines)
-  ;; (global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
-
-  ;;绑定打开最近文件的快捷键
-  (global-set-key (kbd "C-x C-r") 'recentf-open-files)
-
-  (global-set-key (kbd "C-o") 'other-window)
-
-  (global-set-key (kbd "M-i") 'imenu-list-smart-toggle)
-
   (with-eval-after-load 'org
     ;; here goes your Org config :)
     ;; ....
@@ -651,21 +624,6 @@ before packages are loaded."
     (electric-indent-mode -1)
     )
 
-  (global-set-key (kbd "C-x C-a") 'magit)
-
-  (global-unset-key (kbd "TAB"))
-  (global-set-key (kbd "C-i") 'er/expand-region)
-
-  (add-to-list 'spacemacs-large-file-modes-list 'org-mode)
-
-  (add-hook 'org-mode-hook #'spacemacs/toggle-truncate-lines-off)
-
-  (with-eval-after-load "nov"
-    (when (string-equal system-type "windows-nt")
-      (setq process-coding-system-alist
-            (cons `(,nov-unzip-program . (gbk . gbk))
-                  process-coding-system-alist))))
-
   ;; 设置tectonic,可以让org导出为pdf格式.tectonic依赖于texLive
   ;;(setq org-latex-pdf-process '("tectonic %f"))
   ;;上面那个不知道为啥没用,最终用的是下面的配置
@@ -675,21 +633,6 @@ before packages are loaded."
           "xelatex -interaction nonstopmode -output-directory %o %f"))
 
   (require 'org-protocol)
-
-  ;;设置xelatex为auctux默认编辑器
-  ;; (add-hook 'LaTeX-mode-hook
-  ;;           #'(lambda ()
-  ;;               (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t" TeX-run-TeX nil t))))
-  (add-hook 'LaTeX-mode-hook
-            (lambda ()
-              (setq TeX-engine 'xetex)       ; use xelatex default
-              ))
-  ;;下面这个配置不知道有啥用，spacemacs的latex layer会自动设置为true，所以这里不用设置
-  ;;(setq reftex-plug-into-AUCTeX t)
-
-  ;; mac系统下文件路径会乱码。下面两行设置可以解决这个问题
-  (prefer-coding-system 'gb18030)
-  (prefer-coding-system 'utf-8)
 
   ;;设置agenda view的搜索目录
   (setq org-agenda-files '("~/my_code/org/agenda/"))
@@ -716,9 +659,73 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   ;; ob-go enables Org-Babel support for evaluating go code.
   (require 'ob-go)
 
+  (add-hook 'org-mode-hook #'spacemacs/toggle-truncate-lines-off)
+  )
+
+(defun latex-config ()
+  ;;设置xelatex为auctux默认编辑器
+  ;; (add-hook 'LaTeX-mode-hook
+  ;;           #'(lambda ()
+  ;;               (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex --synctex=1%(mode)%' %t" TeX-run-TeX nil t))))
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (setq TeX-engine 'xetex)       ; use xelatex default
+              ))
+  ;;下面这个配置不知道有啥用，spacemacs的latex layer会自动设置为true，所以这里不用设置
+  ;;(setq reftex-plug-into-AUCTeX t)
+  )
+
+(defun dotspacemacs/user-config ()
+  "Configuration for user code:
+This function is called at the very end of Spacemacs startup, after layer
+configuration.
+Put your configuration code here, except for variables that should be set
+before packages are loaded."
+
+  ;;将C-h绑定为删除光标前字符
+  (global-set-key (kbd "C-h") 'paredit-backward-delete)
+
+  ;;设置multiple-cursors多行编辑快捷键
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-+") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  ;; ;; From active region to multiple cursors:
+  ;; (global-set-key (kbd "C-c c r") 'set-rectangular-region-anchor)
+  ;; (global-set-key (kbd "C-c c c") 'mc/edit-lines)
+  ;; (global-set-key (kbd "C-c c e") 'mc/edit-ends-of-lines)
+  ;; (global-set-key (kbd "C-c c a") 'mc/edit-beginnings-of-lines)
+
+  ;;绑定打开最近文件的快捷键
+  (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+
+  (global-set-key (kbd "C-o") 'other-window)
+
+  (global-set-key (kbd "M-i") 'imenu-list-smart-toggle)
+
+  (global-set-key (kbd "C-x C-a") 'magit)
+
+  (global-unset-key (kbd "TAB"))
+  (global-set-key (kbd "C-i") 'er/expand-region)
+
+  (add-to-list 'spacemacs-large-file-modes-list 'org-mode)
+
+  (with-eval-after-load "nov"
+    (when (string-equal system-type "windows-nt")
+      (setq process-coding-system-alist
+            (cons `(,nov-unzip-program . (gbk . gbk))
+                  process-coding-system-alist))))
+
+  ;; mac系统下文件路径会乱码。下面两行设置可以解决这个问题
+  (prefer-coding-system 'gb18030)
+  (prefer-coding-system 'utf-8)
+
   ;; disable menu bar on Mac
   (unless (eq window-system 'mac)
     (menu-bar-mode 0))
+
+  (org-config)
+  (latex-config)
 
   (add-hook 'go-mode-hook
             (lambda ()
