@@ -670,9 +670,31 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   (add-hook 'LaTeX-mode-hook
             (lambda ()
               (setq TeX-engine 'xetex)       ; use xelatex default
+              (set (make-local-variable 'TeX-electric-math) (cons "$" ""));输入$时自动替换为两个$
+
+              ;; 修改preview快捷键。主要是将前缀C-x C-p修改为C-c C-x
+              ;; 在mac上，C-p被我修改为方向键了，这导致C-x C-p没法用。
+              ;; 我不知道怎么修改LaTex-mode-map，所以只能通过local-set-key增加一组新的快捷键
+              (local-set-key (kbd "C-c C-x C-p") #'preview-at-point)
+              (local-set-key (kbd "C-c C-x C-r") #'preview-region)
+              (local-set-key (kbd "C-c C-x C-b") #'preview-buffer)
+              (local-set-key (kbd "C-c C-x C-d") #'preview-document)
+              (local-set-key (kbd "C-c C-x C-f") #'preview-cache-preamble)
+              (local-set-key (kbd "C-c C-x C-c C-f") #'preview-cache-preamble-off)
+              (local-set-key (kbd "C-c C-x C-i") #'preview-goto-info-page)
+              (local-set-key (kbd "C-c C-x C-e") #'preview-environment)
+              (local-set-key (kbd "C-c C-x C-s") #'preview-section)
+              (local-set-key (kbd "C-c C-x C-w") #'preview-copy-region-as-mml)
+              (local-set-key (kbd "C-c C-x C-c C-p") #'preview-clearout-at-point)
+              (local-set-key (kbd "C-c C-x C-c C-r") #'preview-clearout)
+              (local-set-key (kbd "C-c C-x C-c C-s") #'preview-clearout-section)
+              (local-set-key (kbd "C-c C-x C-c C-b") #'preview-clearout-buffer)
+              (local-set-key (kbd "C-c C-x C-c C-d") #'preview-clearout-document)
               ))
+
   ;;下面这个配置不知道有啥用，spacemacs的latex layer会自动设置为true，所以这里不用设置
   ;;(setq reftex-plug-into-AUCTeX t)
+
   )
 
 (defun dotspacemacs/user-config ()
@@ -717,8 +739,9 @@ before packages are loaded."
                   process-coding-system-alist))))
 
   ;; mac系统下文件路径会乱码。下面两行设置可以解决这个问题
-  (prefer-coding-system 'gb18030)
-  (prefer-coding-system 'utf-8)
+  (unless (eq window-system 'mac)
+    (prefer-coding-system 'gb18030)
+    (prefer-coding-system 'utf-8))
 
   ;; disable menu bar on Mac
   (unless (eq window-system 'mac)
