@@ -57,13 +57,7 @@ This function should only modify configuration layer settings."
      chinese
      (latex :variables
             latex-backend 'lsp
-            latex-enable-folding t
-            TeX-outline-extra
-            '(
-              ("\\\\begin{theorem}" 3)
-              ("\\\\begin{proof}" 3)
-              )
-            outline-minor-mode-prefix "\C-c\C-o"
+
             )
      (c-c++ :variables c-c++-backend 'lsp-clangd)
      ;; (shell :variables
@@ -695,6 +689,28 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   ;;下面这个配置不知道有啥用，spacemacs的latex layer会自动设置为true，所以这里不用设置
   ;;(setq reftex-plug-into-AUCTeX t)
 
+  ;; 配置outline-mode
+  (add-hook 'LaTeX-mode-hook #'outline-minor-mode)
+  (add-hook 'outline-minor-mode-hook
+            (lambda ()
+              (let ((map outline-minor-mode-map))
+                ;; 移除旧的绑定
+                (define-key map (kbd "C-c @") nil)
+                ;; 设置新的前缀和命令
+                ;; 将前缀从 C-c @ 改为 C-c C-o
+                (define-key map (kbd "C-c C-o h") 'outline-hide-body)
+                (define-key map (kbd "C-c C-o s") 'outline-show-all)
+                (define-key map (kbd "C-c C-o d") 'outline-hide-subtree)
+                (define-key map (kbd "C-c C-o a") 'outline-show-subtree)
+                (define-key map (kbd "C-c C-o c") 'outline-hide-entry)
+                (define-key map (kbd "C-c C-o e") 'outline-show-entry)
+                (define-key map (kbd "C-c C-o l") 'outline-hide-leaves)
+                (define-key map (kbd "C-c C-o k") 'outline-show-branches)
+                (define-key map (kbd "<tab>") 'outline-cycle)
+                (define-key map (kbd "<S-tab>") 'outline-cycle-buffer)
+                (define-key map (kbd "C-c <up>") 'outline-previous-visible-heading)
+                (define-key map (kbd "C-c <down>") 'outline-next-visible-heading)
+                )))
   )
 
 (defun dotspacemacs/user-config ()
