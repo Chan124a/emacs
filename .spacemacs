@@ -656,6 +656,35 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   (add-hook 'org-mode-hook #'spacemacs/toggle-truncate-lines-off)
   )
 
+(defun my_insert_latex_figure_fun ()
+  "完整的截图并插入LaTeX figure环境"
+  (interactive)
+  (let* ((base-name (format-time-string "%Y%m%d-%H%M%S-%N"))
+         (img-name (concat base-name ".png"))
+         (img-dir "/Users/cpd/my_code/math_note/linear_algebra/flg")
+         (full-path (concat img-dir "/" img-name))
+         (label (concat "fig:" base-name)))
+
+    ;; 创建目录
+    (make-directory img-dir t)
+
+    ;; 截图（根据系统选择命令）
+    (cond ((eq system-type 'darwin)
+           (shell-command (format "screencapture -i %s" full-path)))
+          ((eq system-type 'gnu/linux)
+           (shell-command (format "maim -s %s" full-path)))
+          (t (error "Unsupported system")))
+
+    ;; 插入LaTeX代码
+    (insert (format "
+\\begin{figure}[htbp]
+\\centering
+\\includegraphics[scale=0.6]{%s}
+\\caption{请填写描述}
+\\label{%s}
+\\end{figure}" full-path label)))
+  )
+
 (defun latex-config ()
   ;;设置xelatex为auctux默认编辑器
   ;; (add-hook 'LaTeX-mode-hook
@@ -711,6 +740,11 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
                 (define-key map (kbd "C-c <up>") 'outline-previous-visible-heading)
                 (define-key map (kbd "C-c <down>") 'outline-next-visible-heading)
                 )))
+
+  ;; 设置快捷键ctrl+shift+y,用于快速截屏并插入图片到latex文件中
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-S-y") 'my_insert_latex_figure_fun)))
   )
 
 (defun dotspacemacs/user-config ()
