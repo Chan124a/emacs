@@ -32,7 +32,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(html
+     rust
+     (python :variables python-backend 'lsp)
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -46,20 +48,16 @@ This function should only modify configuration layer settings."
      helm
      (shell :variables shell-default-shell 'vterm)
      ;; lsp
-     ;; markdown
+     markdown
      (multiple-cursors :variables multiple-cursors-backend 'mc)
-     (org :variables org-capture-templates `(
-                                             ("p" "Protocol" plain (file "/Users/cpd/my_code/org/images")
-                                              "%:initial")
-                                             ("L" "Protocol Link" plain (file "/Users/cpd/my_code/org/images")
-                                              "[[%:link][%:description]]")
-                                             ))
+     org
      chinese
-     (latex :variables
-            latex-backend 'lsp
-
-            )
-     (c-c++ :variables c-c++-backend 'lsp-clangd)
+     (latex :variables latex-backend 'lsp)
+     (c-c++ :variables
+            c-c++-backend 'lsp-clangd
+            c-c++-enable-organize-includes-on-save nil
+            c-c++-enable-clang-format-on-save t
+            c-c++-formatter-indent-line t)
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -68,11 +66,16 @@ This function should only modify configuration layer settings."
      ;; version-control
      epub
      treemacs
-     auto-completion
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t)
      syntax-checking
      (go :variables
          go-format-before-save t
          go-use-golangci-lint t)
+     (claude-code :variables
+                  claude-code-ide-window-side 'right
+                  claude-code-ide-window-width 100)
+     solidity
      )
 
 
@@ -84,7 +87,7 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(evil-escape ob-go)
+   dotspacemacs-additional-packages '(evil-escape ob-go gptel mustache code-review)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(org-download)
@@ -577,6 +580,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
           ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
           ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
           ("nongnu"   . "https://elpa.nongnu.org/nongnu/")))
+
   )
 
 (defun dotspacemacs/user-load ()
@@ -586,6 +590,8 @@ This function is called only while dumping Spacemacs configuration. You can
 dump."
 
   )
+
+
 
 (defun org-config()
   ;;启用org-download
@@ -626,7 +632,7 @@ dump."
           "xelatex -interaction nonstopmode -output-directory %o %f"
           "xelatex -interaction nonstopmode -output-directory %o %f"))
 
-  (require 'org-protocol)
+
 
   ;;设置agenda view的搜索目录
   (setq org-agenda-files '("~/my_code/org/agenda/"))
@@ -654,6 +660,28 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   (require 'ob-go)
 
   (add-hook 'org-mode-hook #'spacemacs/toggle-truncate-lines-off)
+
+  ;; 配置org-protocol
+  (server-start)
+  (require 'org-protocol)
+  ;; Kill the frame if one was created for the capture
+  (defvar kk/delete-frame-after-capture 0 "Whether to delete the last frame after the current capture")
+  (defun kk/delete-frame-if-neccessary (&rest r)
+    (cond
+     ((= kk/delete-frame-after-capture 0) nil)
+     ((> kk/delete-frame-after-capture 1)
+      (setq kk/delete-frame-after-capture (- kk/delete-frame-after-capture 1)))
+     (t
+      (setq kk/delete-frame-after-capture 0)
+      (delete-frame))))
+  (advice-add 'org-capture-finalize :after 'kk/delete-frame-if-neccessary)
+  (advice-add 'org-capture-kill :after 'kk/delete-frame-if-neccessary)
+  (advice-add 'org-capture-refile :after 'kk/delete-frame-if-neccessary)
+  (setq org-capture-templates `(
+                                ("L" "Protocol Bookmarks" plain (file+headline "/Users/cpd/my_code/org/capture.org" "Reference") "%:annotation %(progn (setq kk/delete-frame-after-capture 1) \"\")":immediate-finish t :kill-buffer t)
+                                ("p" "Protocol Bookmarks" entry(file+headline "/Users/cpd/my_code/org/test.org" "Notes") "* %U - %:annotation %^g\n\n  %?" :empty-lines 1 :kill-buffer t)
+                                ))
+
   )
 
 (defun my_insert_latex_figure_fun ()
@@ -661,7 +689,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
   (interactive)
   (let* ((base-name (format-time-string "%Y%m%d-%H%M%S-%N"))
          (img-name (concat base-name ".png"))
-         (img-dir "/Users/cpd/my_code/math_note/linear_algebra/flg")
+         (img-dir "/Users/cpd/my_code/math_note/flg")
          (full-path (concat img-dir "/" img-name))
          (label (concat "fig:" base-name)))
 
@@ -673,7 +701,8 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
            (shell-command (format "screencapture -i %s" full-path)))
           ((eq system-type 'gnu/linux)
            (shell-command (format "maim -s %s" full-path)))
-          (t (error "Unsupported system")))
+          (t (error "Unsupported system"))
+          )
 
     ;; 插入LaTeX代码
     (insert (format "
@@ -682,7 +711,7 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 \\includegraphics[scale=0.6]{%s}
 \\caption{请填写描述}
 \\label{%s}
-\\end{figure}" full-path label)))
+\\end{figure}" img-name label)))
   )
 
 (defun latex-config ()
@@ -808,13 +837,25 @@ before packages are loaded."
               (local-set-key (kbd "C-w C-w") 'kill-region)
               (local-set-key (kbd "C-w C-b") 'xref-go-back)
               ))
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-w C-r") 'xref-find-references)
+              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
+              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
+              (local-set-key (kbd "C-w C-w") 'kill-region)
+              (local-set-key (kbd "C-w C-b") 'xref-go-back)
+              ))
   (add-hook 'c++-mode-hook
             (lambda ()
               (local-set-key (kbd "C-w C-r") 'xref-find-references)
               (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
               (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
               (local-set-key (kbd "C-w C-w") 'kill-region)
-              (local-set-key (kdb "C-w C-b") 'xref-pop-marker-stack)
+              ;; mac系统下用的是xref-go-back,至于原来用的xref-pop-marker-stack,可能是因为在linux系统下有些特殊原因
+              (cond ((eq system-type 'darwin)
+                     (local-set-key (kbd "C-w C-b") 'xref-go-back))
+                    (t
+                     (local-set-key (kdb "C-w C-b") 'xref-pop-marker-stack)))
               ))
   (add-hook 'c-mode-hook
             (lambda ()
@@ -822,9 +863,35 @@ before packages are loaded."
               (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
               (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
               (local-set-key (kbd "C-w C-w") 'kill-region)
-              (local-set-key (kdb "C-w C-b") 'xref-pop-marker-stack)
+              ;; mac系统下用的是xref-go-back,至于原来用的xref-pop-marker-stack,可能是因为在linux系统下有些特殊原因
+              (cond ((eq system-type 'darwin)
+                     (local-set-key (kbd "C-w C-b") 'xref-go-back))
+                    (t
+                     (local-set-key (kbb "C-w C-b") 'xref-pop-marker-stack)))
               ))
 
+  ;; 将llvm的路径添加到emacs的PATH里
+  (when (string-equal system-type "darwin")
+    (setenv "PATH" (concat "/opt/homebrew/opt/llvm/bin:" (getenv "PATH")))
+    (setq exec-path (cons "/opt/homebrew/opt/llvm/bin" exec-path)))
+
+  ;;关闭smartparens的自动转义功能,防止C++ 文件里输入 ' 自动变成 \'\'
+  (with-eval-after-load 'smartparens
+    (setq sp-escape-quotes-after-insert nil))
+
+  ;; 设置yasnippet模版目录
+  (setq yas-snippet-dirs '("/Users/cpd/my_code/emacs/snippets"))
+
+  ;; 配置markdown-xwidget，加强markdown文件的渲染效果
+  (add-to-list 'load-path "~/.emacs.d/site-lisp/markdown-xwidget")
+  (use-package markdown-xwidget
+    :after markdown-mode
+    :bind (:map markdown-mode-command-map
+                ("x" . markdown-xwidget-preview-mode))
+    :custom
+    (markdown-xwidget-command "pandoc")       ; 使用 pandoc 渲染
+    (markdown-xwidget-github-theme "light")   ; 主题：light / dark / light-high-contrast 等
+    )
   )
 
 
@@ -844,41 +911,53 @@ This function is called at the very end of Spacemacs initialization."
      '("a0ac98a1bde5d6336295fd350155a4aac1d63c53c1b3773062271074d16ebeb5"
        "7fd8b914e340283c189980cd1883dbdef67080ad1a3a9cc3df864ca53bdc89cf"
        "f3f7f6d6b08c01b78ee82bc864be47fbfbb15f15382c4f5f458666166c51fbe5" default))
+   '(org-agenda-files
+     '("~/my_code/org/database.org" "/Users/cpd/my_code/org/agenda/agenda.org"))
    '(package-selected-packages
-     '(ac-ispell ace-jump-helm-line ace-link aggressive-indent all-the-icons
-                 auctex-latexmk auto-compile auto-highlight-symbol auto-yasnippet
-                 centered-cursor-mode clean-aindent-mode column-enforce-mode
-                 company-auctex company-math company-reftex define-word devdocs
-                 diminish dired-quiCk-Sort dotenv-mode drag-stuff dumb-jump
-                 editorconfig elisp-def elisp-slime-nav emr esxml eval-sexp-fu
-                 evil-anzu evil-args evil-cleverparens evil-collection evil-escape
+     '(ac-ispell ace-jump-helm-line ace-link add-node-modules-path aggressive-indent
+                 all-the-icons anaconda-mode auctex-latexmk auto-compile
+                 auto-highlight-symbol auto-yasnippet blacken centered-cursor-mode
+                 clean-aindent-mode code-cells column-enforce-mode
+                 company-anaconda company-auctex company-math company-reftex
+                 company-web concurrent cond-let counsel counsel-css ctable
+                 cython-mode define-word devdocs diminish dired-quiCk-Sort
+                 dotenv-mode drag-stuff dumb-jump editorconfig elisp-def
+                 elisp-slime-nav emmet-mode emr epc esxml eval-sexp-fu evil-anzu
+                 evil-args evil-cleverparens evil-collection evil-escape
                  evil-evilified-state evil-exchange evil-goggles evil-iedit-state
                  evil-indent-plus evil-lion evil-lisp-state evil-matchit evil-mc
                  evil-nerd-commenter evil-numbers evil-org evil-surround evil-tex
                  evil-textobj-line evil-tutor evil-unimpaired
                  evil-visual-mark-mode evil-visualstar expand-region eyebrowse
                  fancy-battery flx-ido flycheck-elsa flycheck-package
-                 flycheck-pos-tip fuzzy git-link git-messenger git-modes
+                 flycheck-pos-tip fuzzy ggtags git-link git-messenger git-modes
                  git-timemachine gitignore-templates gnu-elpa-keyring-update
-                 gnuplot golden-ratio google-translate helm-ag helm-c-yasnippet
-                 helm-company helm-descbinds helm-git-grep helm-ls-git helm-lsp
-                 helm-make helm-mode-manager helm-org helm-org-rifle
-                 helm-projectile helm-purpose helm-swoop helm-themes helm-xref
+                 gnuplot golden-ratio google-translate haml-mode helm-ag
+                 helm-c-yasnippet helm-company helm-core helm-cscope helm-css-scss
+                 helm-descbinds helm-git-grep helm-ls-git helm-lsp helm-make
+                 helm-mode-manager helm-org helm-org-rifle helm-projectile
+                 helm-purpose helm-pydoc helm-swoop helm-themes helm-xref
                  hide-comnt highlight-indentation highlight-numbers
                  highlight-parentheses hl-todo holy-mode htmlize hungry-delete
-                 hybrid-mode indent-guide info+ inspector kv link-hint lorem-ipsum
-                 lsp-latex lsp-origami lsp-treemacs lsp-ui macrostep multi-line
-                 multiple-cursors nameless nov ob-go open-junk-file org-cliplink
-                 org-download org-mime org-pomodoro org-present org-projectile
-                 org-rich-yank org-superstar orgit overseer paradox
-                 password-generator pcre2el popwin quickrun rainbow-delimiters
-                 request restart-emacs smeargle space-doc spaceline
-                 spacemacs-purpose-popwin spacemacs-whitespace-cleanup
-                 string-edit-at-point string-inflection symbol-overlay symon
-                 term-cursor toc-org treemacs-icons-dired treemacs-magit
-                 treemacs-persp treemacs-projectile undo-tree use-package uuidgen
-                 vi-tilde-fringe vim-powerline volatile-highlights which-key winum
-                 writeroom-mode ws-butler yasnippet-snippets)))
+                 hybrid-mode impatient-mode importmagic indent-guide info+
+                 inspector ivy kv link-hint live-py-mode load-env-vars lorem-ipsum
+                 lsp-latex lsp-origami lsp-pyright lsp-treemacs lsp-ui macrostep
+                 multi-line multiple-cursors mustache nameless nose nov ob-go
+                 open-junk-file org-cliplink org-download org-mime org-pomodoro
+                 org-present org-projectile org-rich-yank org-superstar orgit
+                 overseer paradox password-generator pcre2el pip-requirements
+                 pipenv pippel poetry popwin prettier-js pug-mode py-isort pydoc
+                 pyenv-mode pylookup pytest pythonic pyvenv quickrun
+                 rainbow-delimiters request restart-emacs ron-mode rust-mode
+                 rustic sass-mode scss-mode simple-httpd slim-mode smeargle
+                 space-doc spaceline spacemacs-purpose-popwin
+                 spacemacs-whitespace-cleanup sphinx-doc string-edit-at-point
+                 string-inflection swiper symbol-overlay symon tagedit term-cursor
+                 toc-org treemacs-icons-dired treemacs-magit treemacs-persp
+                 treemacs-projectile undo-tree use-package uuidgen vi-tilde-fringe
+                 vim-powerline volatile-highlights web-beautify
+                 web-completion-data web-mode which-key winum writeroom-mode
+                 ws-butler xcscope xterm-color yapfify yasnippet-snippets)))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.

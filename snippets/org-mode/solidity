@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Solidity
+# key: soli
+# --
+#+begin_src solidity
+$0
+#+end_src
