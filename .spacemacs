@@ -86,7 +86,7 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(evil-escape ob-go gptel mustache code-review)
+   dotspacemacs-additional-packages '(evil-escape ob-go gptel mustache code-review org-anki)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '(org-download)
@@ -686,6 +686,13 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
               (local-set-key (kbd "C-c C-x C-v") 'org-toggle-inline-images)
               ))
 
+  ;;配置org-anki
+  (set org-enable-org-anki-support t)
+  ;; 配置 Emacs 连接 Anki
+  (setq org-anki-connect-host "127.0.0.1")
+  (setq org-anki-connect-port 8765)
+  (setq org-anki-default-deck "Default")
+
   )
 
 (defun my_insert_latex_figure_fun ()
@@ -947,14 +954,14 @@ This function is called at the very end of Spacemacs initialization."
                  inspector ivy kv link-hint live-py-mode load-env-vars lorem-ipsum
                  lsp-latex lsp-origami lsp-pyright lsp-treemacs lsp-ui macrostep
                  multi-line multiple-cursors mustache nameless nose nov ob-go
-                 open-junk-file org-cliplink org-download org-mime org-pomodoro
-                 org-present org-projectile org-rich-yank org-superstar orgit
-                 overseer paradox password-generator pcre2el pip-requirements
-                 pipenv pippel poetry popwin prettier-js pug-mode py-isort pydoc
-                 pyenv-mode pylookup pytest pythonic pyvenv quickrun
-                 rainbow-delimiters request restart-emacs ron-mode rust-mode
-                 rustic sass-mode scss-mode simple-httpd slim-mode smeargle
-                 space-doc spaceline spacemacs-purpose-popwin
+                 open-junk-file org-anki org-cliplink org-download org-mime
+                 org-pomodoro org-present org-projectile org-rich-yank
+                 org-superstar orgit overseer paradox password-generator pcre2el
+                 pip-requirements pipenv pippel poetry popwin prettier-js promise
+                 pug-mode py-isort pydoc pyenv-mode pylookup pytest pythonic
+                 pyvenv quickrun rainbow-delimiters request restart-emacs ron-mode
+                 rust-mode rustic sass-mode scss-mode simple-httpd slim-mode
+                 smeargle space-doc spaceline spacemacs-purpose-popwin
                  spacemacs-whitespace-cleanup sphinx-doc string-edit-at-point
                  string-inflection swiper symbol-overlay symon tagedit term-cursor
                  toc-org treemacs-icons-dired treemacs-magit treemacs-persp
