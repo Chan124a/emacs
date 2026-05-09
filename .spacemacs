@@ -42,7 +42,6 @@ This function should only modify configuration layer settings."
      ;; ----------------------------------------------------------------
      ;; auto-completion
      ;; better-defaults
-     imenu
      emacs-lisp
      git
      helm
@@ -487,7 +486,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
    ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("rg" "ag" "ack" "grep")
 
    ;; Format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
@@ -681,6 +680,11 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
                                 ("L" "Protocol Bookmarks" plain (file+headline "/Users/cpd/my_code/org/capture.org" "Reference") "%:annotation %(progn (setq kk/delete-frame-after-capture 1) \"\")":immediate-finish t :kill-buffer t)
                                 ("p" "Protocol Bookmarks" entry(file+headline "/Users/cpd/my_code/org/test.org" "Notes") "* %U - %:annotation %^g\n\n  %?" :empty-lines 1 :kill-buffer t)
                                 ))
+
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c C-x C-v") 'org-toggle-inline-images)
+              ))
 
   )
 
