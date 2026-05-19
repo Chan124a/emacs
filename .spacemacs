@@ -687,10 +687,8 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
               ))
 
   ;;配置org-anki
-  (set org-enable-org-anki-support t)
-  ;; 配置 Emacs 连接 Anki
-  (setq org-anki-connect-host "127.0.0.1")
-  (setq org-anki-connect-port 8765)
+  (require 'org-anki)
+  (setq org-anki-ankiconnnect-listen-address "http://127.0.0.1:8765")
   (setq org-anki-default-deck "Default")
 
   )
@@ -724,6 +722,44 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 \\label{%s}
 \\end{figure}" img-name label)))
   )
+
+(defun cpd/markdown-insert-screenshot ()
+  "Capture a screenshot and insert it as a Markdown image link.
+The screenshot is saved under an `images' directory next to the current
+Markdown file."
+  (interactive)
+  (unless buffer-file-name
+    (user-error "Please save this Markdown buffer before inserting a screenshot"))
+  (let* ((base-dir (file-name-directory buffer-file-name))
+         (image-dir (expand-file-name "images" base-dir))
+         (file-base (file-name-base buffer-file-name))
+         (timestamp (format-time-string "%Y%m%d-%H%M%S"))
+         (filename (format "%s-%s.png" file-base timestamp))
+         (image-path (expand-file-name filename image-dir))
+         (relative-path (file-relative-name image-path base-dir))
+         (command (cond
+                   ((eq system-type 'darwin)
+                    (format "screencapture -i %s" (shell-quote-argument image-path)))
+                   ((executable-find "gnome-screenshot")
+                    (format "gnome-screenshot -a -f %s" (shell-quote-argument image-path)))
+                   ((executable-find "import")
+                    (format "import %s" (shell-quote-argument image-path)))
+                   (t
+                    (user-error "No supported screenshot command found")))))
+    (make-directory image-dir t)
+    (if (zerop (shell-command command))
+        (if (file-exists-p image-path)
+            (insert (format "![screenshot](%s)" relative-path))
+          (message "Screenshot cancelled"))
+      (when (file-exists-p image-path)
+        (delete-file image-path))
+      (message "Screenshot cancelled"))))
+
+(defun cpd/markdown-config ()
+  "Personal Markdown configuration."
+  (add-hook 'markdown-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-S-y") #'cpd/markdown-insert-screenshot))))
 
 (defun latex-config ()
   ;;设置xelatex为auctux默认编辑器
@@ -839,6 +875,7 @@ before packages are loaded."
 
   (org-config)
   (latex-config)
+  (cpd/markdown-config)
 
   (add-hook 'go-mode-hook
             (lambda ()
@@ -903,6 +940,10 @@ before packages are loaded."
     (markdown-xwidget-command "pandoc")       ; 使用 pandoc 渲染
     (markdown-xwidget-github-theme "light")   ; 主题：light / dark / light-high-contrast 等
     )
+
+  (add-to-list 'load-path "/Users/cpd/my_code/org/anki")
+  (require 'anki-system)
+  (setq anki-system-root "/Users/cpd/my_code/org/anki")
   )
 
 
