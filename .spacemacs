@@ -755,11 +755,107 @@ Markdown file."
         (delete-file image-path))
       (message "Screenshot cancelled"))))
 
+(defun cpd/markdown-export-pdf ()
+  "Export the current Markdown file to a PDF via pandoc HTML and Chrome."
+  (interactive)
+  (unless buffer-file-name
+    (user-error "Please save this Markdown buffer before exporting to PDF"))
+  (unless (executable-find "pandoc")
+    (user-error "pandoc is not installed or not in Emacs exec-path"))
+  (unless (file-executable-p "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+    (user-error "Google Chrome is not installed in /Applications"))
+  (save-buffer)
+  (let* ((input-file buffer-file-name)
+         (base-name (file-name-sans-extension input-file))
+         ;; Keep generated files next to the Markdown file for predictable
+         ;; relative image paths such as images/foo.png.
+         (html-file (concat base-name ".html"))
+         (css-file (concat base-name ".pdf.css"))
+         (output-file (concat (file-name-sans-extension input-file) ".pdf"))
+         (default-directory (file-name-directory input-file))
+         ;; Build a standalone HTML file first so raw HTML image tags keep
+         ;; working before Chrome prints the page to PDF.
+         (html-command (mapconcat
+                        #'identity
+                        (list "pandoc"
+                              (shell-quote-argument input-file)
+                              "--standalone"
+                              "--embed-resources"
+                              "--css"
+                              (shell-quote-argument css-file)
+                              "-f"
+                              "markdown+raw_html"
+                              "-t"
+                              "html5"
+                              "-o"
+                              (shell-quote-argument html-file))
+                        " "))
+         ;; Chrome's print engine preserves the HTML layout better than
+         ;; pandoc's LaTeX PDF path for documents with <img> tags.
+         (pdf-command (mapconcat
+                       #'identity
+                       (list (shell-quote-argument "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+                             "--headless"
+                             "--disable-gpu"
+                             "--print-to-pdf-no-header"
+                             (format "--print-to-pdf=%s" (shell-quote-argument output-file))
+                             (shell-quote-argument (concat "file://" html-file)))
+                       " ")))
+    ;; This CSS is shared by the generated HTML and Chrome's print view.
+    ;; Adjust padding/max-width here to control PDF page margins and content width.
+    (with-temp-file css-file
+      (insert "html {
+  background: #ffffff;
+}
+
+body {
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 100px;
+  line-height: 1.6;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff;
+  }
+
+  body {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 100px;
+  }
+}
+"))
+    ;; Run the two-step export and surface failures in Emacs.
+    (unless (eq (shell-command html-command) 0)
+      (user-error "Failed to export HTML; check *Shell Command Output*"))
+    (if (eq (shell-command pdf-command) 0)
+        (message "Exported PDF: %s" output-file)
+      (user-error "Failed to export PDF; check *Shell Command Output*"))))
+
 (defun cpd/markdown-config ()
   "Personal Markdown configuration."
   (add-hook 'markdown-mode-hook
             (lambda ()
-              (local-set-key (kbd "C-S-y") #'cpd/markdown-insert-screenshot))))
+              (local-set-key (kbd "C-S-y") #'cpd/markdown-insert-screenshot)
+              (local-set-key (kbd "C-c C-e p") #'cpd/markdown-export-pdf))))
 
 (defun latex-config ()
   ;;设置xelatex为auctux默认编辑器
