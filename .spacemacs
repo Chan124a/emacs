@@ -857,7 +857,31 @@ img {
               (local-set-key (kbd "C-S-y") #'cpd/markdown-insert-screenshot)
               (local-set-key (kbd "C-c C-e p") #'cpd/markdown-export-pdf))))
 
+(defun cpd/latexmk-pvc-setup ()
+  "Add a latexmk -pvc command to AUCTeX."
+  (with-eval-after-load 'tex
+    (when (and (not (assoc "LatexMk" TeX-command-list))
+               (require 'auctex-latexmk nil t))
+      (auctex-latexmk-setup))
+    (add-to-list 'TeX-command-list
+                 '("LatexMk PVC"
+                   "latexmk -pvc %(-PDF)%S%(mode) %(file-line-error) %(extraopts) %t"
+                   TeX-run-command nil
+                   (plain-tex-mode latex-mode doctex-mode)
+                   :help "Run LatexMk in preview-continuous mode")
+                 t)))
+
+(defun cpd/latexmk-pvc-preview ()
+  "Continuously compile the current TeX master with latexmk -pvc."
+  (interactive)
+  (unless (executable-find "latexmk")
+    (user-error "latexmk is not available on PATH"))
+  (TeX-save-document (TeX-master-file))
+  (TeX-command "LatexMk PVC" #'TeX-master-file -1))
+
 (defun latex-config ()
+  (cpd/latexmk-pvc-setup)
+
   ;;设置xelatex为auctux默认编辑器
   ;; (add-hook 'LaTeX-mode-hook
   ;;           #'(lambda ()
@@ -885,6 +909,7 @@ img {
               (local-set-key (kbd "C-c C-x C-c C-s") #'preview-clearout-section)
               (local-set-key (kbd "C-c C-x C-c C-b") #'preview-clearout-buffer)
               (local-set-key (kbd "C-c C-x C-c C-d") #'preview-clearout-document)
+              (local-set-key (kbd "C-c C-x C-l") #'cpd/latexmk-pvc-preview)
               ))
 
   ;;下面这个配置不知道有啥用，spacemacs的latex layer会自动设置为true，所以这里不用设置
