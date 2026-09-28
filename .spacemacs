@@ -944,6 +944,18 @@ img {
               (local-set-key (kbd "C-S-y") 'my_insert_latex_figure_fun)))
   )
 
+(defun my/setup-xref-keybindings ()
+  (local-set-key (kbd "C-w C-r") #'xref-find-references)
+  (local-set-key (kbd "C-w C-d") #'xref-find-definitions)
+  (local-set-key (kbd "C-w C-i") #'lsp-find-implementation)
+  (local-set-key (kbd "C-w C-w") #'kill-region)
+  ;; macOS 用 xref-go-back；其他系统保留原来的行为
+  (local-set-key
+   (kbd "C-w C-b")
+   (if (eq system-type 'darwin)
+       #'xref-go-back
+     #'xref-pop-marker-stack)))
+
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -998,46 +1010,12 @@ before packages are loaded."
   (latex-config)
   (cpd/markdown-config)
 
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-w C-r") 'xref-find-references)
-              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
-              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
-              (local-set-key (kbd "C-w C-w") 'kill-region)
-              (local-set-key (kbd "C-w C-b") 'xref-go-back)
-              ))
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-w C-r") 'xref-find-references)
-              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
-              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
-              (local-set-key (kbd "C-w C-w") 'kill-region)
-              (local-set-key (kbd "C-w C-b") 'xref-go-back)
-              ))
-  (add-hook 'c++-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-w C-r") 'xref-find-references)
-              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
-              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
-              (local-set-key (kbd "C-w C-w") 'kill-region)
-              ;; mac系统下用的是xref-go-back,至于原来用的xref-pop-marker-stack,可能是因为在linux系统下有些特殊原因
-              (cond ((eq system-type 'darwin)
-                     (local-set-key (kbd "C-w C-b") 'xref-go-back))
-                    (t
-                     (local-set-key (kdb "C-w C-b") 'xref-pop-marker-stack)))
-              ))
-  (add-hook 'c-mode-hook
-            (lambda ()
-              (local-set-key (kbd "C-w C-r") 'xref-find-references)
-              (local-set-key (kbd "C-w C-d") 'xref-find-definitions)
-              (local-set-key (kbd "C-w C-i") 'lsp-find-implementation)
-              (local-set-key (kbd "C-w C-w") 'kill-region)
-              ;; mac系统下用的是xref-go-back,至于原来用的xref-pop-marker-stack,可能是因为在linux系统下有些特殊原因
-              (cond ((eq system-type 'darwin)
-                     (local-set-key (kbd "C-w C-b") 'xref-go-back))
-                    (t
-                     (local-set-key (kbb "C-w C-b") 'xref-pop-marker-stack)))
-              ))
+  (dolist (hook '(go-mode-hook
+                  rust-mode-hook
+                  c++-mode-hook
+                  c-mode-hook
+                  python-mode-hook))
+    (add-hook hook #'my/setup-xref-keybindings))
 
   ;; 将llvm的路径添加到emacs的PATH里
   (when (string-equal system-type "darwin")
